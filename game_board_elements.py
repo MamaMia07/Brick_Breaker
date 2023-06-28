@@ -1,7 +1,5 @@
 import pygame
-import sys
 import random, math
-
 
 
 class Button(pygame.sprite.Sprite):
@@ -43,74 +41,60 @@ class Bar(pygame.sprite.Sprite):
 
     def update(self):
         self.movement()
-        #self.bar_image()
+
 
 
 class Brick(pygame.sprite.Sprite):
-    def __init__(self, picture_path, pos_x, pos_y, points, hardness = 0):
+    def __init__(self, picture_path, pos_x, pos_y, points, hard):
         super().__init__()
         self.image = pygame.image.load(picture_path).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.topleft = (pos_x, pos_y)
         self.points = points
-        self.hardness = hardness
+        self.hard = hard
 
     def cracked(self):
        self.hardness = 0
        self.image = pygame.image.load("PNG/brick_cracked3.png").convert_alpha()
 
 
+
 class BrickWall():
     def __init__(self):
         pass
-        
     def brick_line(self,brickgroup, brick_file, brick_nb, col, row, points, hard):
-        global brick_group
         i = 0
         brick_width = 51
         for brick in range(brick_nb):
-            new_brick = Brick(brick_file, col+i, row, points)
+            new_brick = Brick(brick_file, col+i, row, points, hard)
             new_brick.hardness = hard 
             i= i+ brick_width
             brickgroup.add(new_brick)
 
-    def brickwall_lev1(self, brickgroup):
-        global brick_group
-        brick_colors = ["PNG/brick_red.png","PNG/brick_blue.png","PNG/brick_yellow.png"]                  
-        nb_of_bricks = [ 12 , 11, 12]
-        first_brick_x = [ 10 , 35, 10]
-        points = 30
+    def brickwall_lev(self, brickgroup, level):
         brick_height = 8
-        for color, number, x in zip(brick_colors, nb_of_bricks, first_brick_x):
-            self.brick_line(brickgroup, color, number, x, brick_height, points, 0)
-            brick_height += 26
-            points -= 10
-
-    def brickwall_lev2(self, brickgroup):
-        global brick_group
-        brick_colors = ["PNG/brick_red.png","PNG/brick_green.png","PNG/brick_blue.png",
-                        "PNG/brick_yellow.png", "PNG/brick_purple.png"]
-        nb_of_bricks = [ 12, 11 , 12, 11, 12]
-        first_brick_x = [ 10, 35, 10, 35, 10]
-        points = 50
-        brick_height = 8
-        for color, number, x in zip(brick_colors, nb_of_bricks, first_brick_x):
-            self.brick_line(brickgroup, color, number, x, brick_height, points, 0)
-            brick_height += 26
-            points -= 10
-
-    def brickwall_lev3(self, brickgroup):
-        global brick_group
-        brick_colors = ["PNG/brick_yellow.png", "PNG/brick.png", "PNG/brick_red.png","PNG/brick_green.png","PNG/brick.png"]
+        brick_colors = ["PNG/brick_red.png","PNG/brick_green.png","PNG/brick_blue.png", "PNG/brick_yellow.png", "PNG/brick_purple.png"]
+        hard_brick_color = "PNG/brick.png"
+       
+        lev_set = {"level_1" : {"hard" : [0, 0, 0], "max_points": 30},
+                   "level_2" : {"hard" : [0, 0, 0, 0 ,0], "max_points": 50},
+                   "level_3" : {"hard" : [0, 1, 0, 0 ,1], "max_points": 50}}
+        
         nb_of_bricks = [ 12, 11 , 12, 11, 12]
         first_brick_x = [10, 35, 10, 35, 10]
-        hard = [0, 1, 0, 0 ,1]
-        points = 50
-        brick_height = 8
-        for color, number, x, hard in zip(brick_colors, nb_of_bricks, first_brick_x, hard):
-            self.brick_line(brickgroup, color, number, x, brick_height, points, hard)
+
+        points = lev_set[level]["max_points"]
+
+        for i in range(len((lev_set[level]["hard"]))):
+            hardness = lev_set[level]['hard'][i]
+            br_color = brick_colors[i] if hardness == 0 else hard_brick_color
+            br_number = nb_of_bricks[i]
+            first_br_x = first_brick_x[i]
+           
+            self.brick_line(brickgroup, br_color, br_number, first_br_x, brick_height, points, hardness)              
             brick_height += 26
             points -= 10
+
 
 
 class FastBall(pygame.sprite.Sprite):
@@ -134,10 +118,6 @@ class FastBall(pygame.sprite.Sprite):
         self.rect.y += self.speed
         if self.rect.bottom >= 495:
             pygame.sprite.Sprite.remove(self, fastgroup) 
-
-##    def update(self):
-##        self.catch(fastgroup)
-##        self.movement(fastgroup)
 
 
 
@@ -202,10 +182,6 @@ class Ball(pygame.sprite.Sprite):
       self.rect.x += self.speed * math.sin(self.angle)
       self.rect.y -= self.speed * math.cos(self.angle)
 
-##    def update(self):
-##        self.movement()
-##        self.collision()
-
 
 
 class ExtraBall(Ball): 
@@ -225,10 +201,6 @@ class ExtraBall(Ball):
 
           self.rect.x += self.speed * math.sin(self.angle)
           self.rect.y -= self.speed * math.cos(self.angle)
-##    def update(self):
-##        self.movement()
-##        self.collision(extragroup)
-##        self.fall(extragroup)
 
 
 
@@ -255,9 +227,5 @@ class BallContainer(pygame.sprite.Sprite):
                     for _ in range(3):
                         self.extra_ball = ExtraBall("PNG/ball_extra.png", self.rect.x, self.rect.y)
                         extragroup.add(self.extra_ball) 
-##    def update(self):
-##        self.movement()
-##        self.catch()
-
 
         

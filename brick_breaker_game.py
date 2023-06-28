@@ -1,6 +1,6 @@
 import pygame
 import sys
-import random, math
+import random
 import init_variables as ivar
 import game_board_elements as gbe 
 
@@ -46,12 +46,12 @@ class GameStage():
                 if self.level_nb == 0:
                     game.level = "level_1"
                     brick_wall = gbe.BrickWall()
-                    brick_wall.brickwall_lev1(brick_group)
+                    brick_wall.brickwall_lev(brick_group, game.level)
 
                 if self.level_nb == 1:
                     game.level = "level_2"
                     brick_wall = gbe.BrickWall()
-                    brick_wall.brickwall_lev2(brick_group)
+                    brick_wall.brickwall_lev(brick_group, game.level)
                     extra_balls_group.empty()
                     fast_ball_group.empty()
                     ball.speed = 2
@@ -60,7 +60,7 @@ class GameStage():
                 if self.level_nb == 2:
                     game.level = "level_3"
                     brick_wall = gbe.BrickWall()
-                    brick_wall.brickwall_lev3(brick_group)
+                    brick_wall.brickwall_lev(brick_group, game.level)
                     extra_balls_group.empty()
                     fast_ball_group.empty()
                     ball.speed = 2
@@ -82,7 +82,6 @@ class GameStage():
         pygame.display.flip()
 
     def level(self):
-        global counter, level, brick_group
         pygame.mouse.set_visible(False) 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -242,8 +241,6 @@ extra_balls_group = pygame.sprite.Group()
 fast_ball_group = pygame.sprite.Group()
 
 brick_group = pygame.sprite.Group()
-brick_wall = gbe.BrickWall()
-brick_wall.brickwall_lev1(brick_group)
 
 bar = gbe.Bar()
 bar_group = pygame.sprite.GroupSingle()
