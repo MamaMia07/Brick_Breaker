@@ -3,26 +3,26 @@ import random, math
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, image_path, pos):
+    def __init__(self, img_path, pos):
         super().__init__()
-        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.image.load(img_path).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (pos)
 
 
 class Bar(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, img_path):
         super().__init__()
         self.x = 300
         self.y = 450
        
-        bar_3_balls = pygame.image.load("PNG/bar3.png").convert_alpha()
-        bar_2_balls = pygame.image.load("PNG/bar2.png").convert_alpha()
-        bar_1_ball = pygame.image.load("PNG/bar1.png").convert_alpha()
-        bar_0_ball = pygame.image.load("PNG/bar0.png").convert_alpha()
+        bar_3_balls = pygame.image.load(img_path/"bar3.png").convert_alpha()
+        bar_2_balls = pygame.image.load(img_path/"bar2.png").convert_alpha()
+        bar_1_ball = pygame.image.load(img_path/"bar1.png").convert_alpha()
+        bar_0_ball = pygame.image.load(img_path/"bar0.png").convert_alpha()
 
         self.balls_nb = [bar_3_balls, bar_2_balls, bar_1_ball, bar_0_ball]
-        self.image = pygame.image.load("PNG/bar3.png").convert_alpha()
+        self.image = pygame.image.load(img_path/"bar3.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (self.x,self.y))
 
     def bar_image(self, counter):
@@ -45,23 +45,23 @@ class Bar(pygame.sprite.Sprite):
 
 
 class Brick(pygame.sprite.Sprite):
-    def __init__(self, picture_path, pos_x, pos_y, points, hard):
+    def __init__(self, img_path, pos_x, pos_y, points, hard):
         super().__init__()
-        self.image = pygame.image.load(picture_path).convert_alpha()
+        self.image = pygame.image.load(img_path).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.topleft = (pos_x, pos_y)
         self.points = points
         self.hard = hard
-
-    def cracked(self):
+        self.img_path = img_path
+    def cracked(self, img_path):
        self.hardness = 0
-       self.image = pygame.image.load("PNG/brick_cracked3.png").convert_alpha()
+       self.image = pygame.image.load(img_path/"brick_cracked3.png").convert_alpha()
 
 
 
 class BrickWall():
-    def __init__(self):
-        pass
+    def __init__(self,img_path):
+        self.img_path = img_path
     def brick_line(self,brickgroup, brick_file, brick_nb, col, row, points, hard):
         i = 0
         brick_width = 51
@@ -73,8 +73,9 @@ class BrickWall():
 
     def brickwall_lev(self, brickgroup, level):
         brick_height = 8
-        brick_colors = ["PNG/brick_red.png","PNG/brick_green.png","PNG/brick_blue.png", "PNG/brick_yellow.png", "PNG/brick_purple.png"]
-        hard_brick_color = "PNG/brick.png"
+        brick_colors = [self.img_path/"brick_red.png",self.img_path/"brick_green.png",self.img_path/"brick_blue.png",
+                        self.img_path/"brick_yellow.png", self.img_path/"brick_purple.png"]
+        hard_brick_color = self.img_path/"brick.png"
        
         lev_set = {"level_1" : {"hard" : [0, 0, 0], "max_points": 30},
                    "level_2" : {"hard" : [0, 0, 0, 0 ,0], "max_points": 50},
@@ -98,13 +99,15 @@ class BrickWall():
 
 
 class FastBall(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, img_path):
         super().__init__()
+        self.img_path = img_path
         self.x = random.uniform(40, 590)
         self.y = 50
-        self.image = pygame.image.load("PNG/fast_container.png").convert_alpha()
+        self.image = pygame.image.load(self.img_path/"fast_container.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (self.x, self.y))
         self.speed = 2
+        
 
     def catch(self, fastgroup, bargroup, ballgroup):
        tollerance = self.speed +5
@@ -112,7 +115,7 @@ class FastBall(pygame.sprite.Sprite):
        if len(self.collide_fast_bar) > 0:
            for sprite in ballgroup:
                sprite.speed += 2 
-               sprite.image = pygame.image.load("PNG/fireball.png").convert_alpha()
+               sprite.image = pygame.image.load(self.img_path/"fireball.png").convert_alpha()
  
     def movement(self, fastgroup):
         self.rect.y += self.speed
@@ -122,11 +125,12 @@ class FastBall(pygame.sprite.Sprite):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, picture_path):
+    def __init__(self, img_path):
         super().__init__()
+        self.img_path = img_path#/"ball.png"
         self.x = 300
         self.y = 350
-        self.image = pygame.image.load(picture_path).convert_alpha()
+        self.image = pygame.image.load(self.img_path/"ball.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (self.x, self.y))
         self.angles= [-0.7,-0.5,-0.3, 0.3, 0.5, 0.7]
         self.angle = random.choice(self.angles)
@@ -153,7 +157,7 @@ class Ball(pygame.sprite.Sprite):
                     self.rect.left = self.collide_brick[sprite][0].rect.right
                     self.angle = 2*math.pi - self.angle
                 if self.collide_brick[sprite][0].hardness == 1:
-                   self.collide_brick[sprite][0].cracked()
+                   self.collide_brick[sprite][0].cracked(self.img_path)
                 else:
                     brickgroup.remove(self.collide_brick[sprite][0])
 
@@ -175,7 +179,7 @@ class Ball(pygame.sprite.Sprite):
             self.fall = True
             for sprite in ballgroup:
                sprite.speed = 2 
-               sprite.image = pygame.image.load("PNG/ball.png").convert_alpha()
+               sprite.image = pygame.image.load(self.img_path/"ball.png").convert_alpha()
         
             self.rect.midbottom = (self.x,self.y)
             self.angle = random.choice(self.angles)
@@ -185,13 +189,14 @@ class Ball(pygame.sprite.Sprite):
 
 
 class ExtraBall(Ball): 
-    def __init__(self, picture_path, x, y):
-        super().__init__(picture_path) 
+    def __init__(self, img_path, x, y):
+        super().__init__(img_path) 
         self.rect.x = x
         self.rect.y = y
         self.angles= [-0.6,-0.5,-0.3, -0.2, 0.2,0.3, 0.4, 0.5, 0.6]
         self.angle = random.choice(self.angles)
-
+        self.img_path = img_path
+        self.image = pygame.image.load(self.img_path/"ball_extra.png").convert_alpha()
     def movement(self,  extragroup):
           if self.rect.left <= 6 or self.rect.right >= 595: 
                 self.angle = 2*math.pi - self.angle
@@ -205,11 +210,12 @@ class ExtraBall(Ball):
 
 
 class BallContainer(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, img_path):
         super().__init__()
+        self.img_path = img_path
         self.x = random.uniform(40, 590)
         self.y = 50
-        self.image = pygame.image.load("PNG/ball_container.png").convert_alpha()
+        self.image = pygame.image.load(self.img_path/"ball_container.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (self.x, self.y))
         self.speed = 2
         
@@ -225,7 +231,7 @@ class BallContainer(pygame.sprite.Sprite):
             for i in self.collide_bar:
                 if abs(self.rect.bottom - self.collide_bar[i][0].rect.top) < tollerance:
                     for _ in range(3):
-                        self.extra_ball = ExtraBall("PNG/ball_extra.png", self.rect.x, self.rect.y)
+                        self.extra_ball = ExtraBall(self.img_path, self.rect.x, self.rect.y)
                         extragroup.add(self.extra_ball) 
 
         

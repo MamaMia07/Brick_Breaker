@@ -1,10 +1,10 @@
 import pygame
-import sys
-import random
+import sys, random, pathlib
 import init_variables as ivar
 import game_board_elements as gbe 
 
 game = ivar.InVar()
+img_path = pathlib.Path.cwd()/"PNG"
 
 class GameStage():
     def __init__(self):
@@ -14,7 +14,7 @@ class GameStage():
     def counting(self):
         pygame.mouse.set_visible(False) 
 
-        ball = gbe.Ball("PNG/ball.png")
+        ball = gbe.Ball(img_path)
         ball_group.add(ball)
 
         extra_balls_group.empty()
@@ -24,9 +24,9 @@ class GameStage():
         
         bar.rect.x , bar.rect.y = 260, 430
 
-        count_lev_1 = ["PNG/count_lev1_3.png", "PNG/count_lev1_2.png","PNG/count_lev1_1.png"] 
-        count_lev_2 = ["PNG/count_lev2_3.png", "PNG/count_lev2_2.png","PNG/count_lev2_1.png"]
-        count_lev_3 = ["PNG/count_lev3_3.png", "PNG/count_lev3_2.png","PNG/count_lev3_1.png"]
+        count_lev_1 = [img_path/"count_lev1_3.png", img_path/"count_lev1_2.png",img_path/"count_lev1_1.png"] 
+        count_lev_2 = [img_path/"count_lev2_3.png", img_path/"count_lev2_2.png",img_path/"count_lev2_1.png"]
+        count_lev_3 = [img_path/"count_lev3_3.png", img_path/"count_lev3_2.png",img_path/"count_lev3_1.png"]
 
         if self.level_nb == 0: self.count_lev = count_lev_1
         if self.level_nb == 1: self.count_lev = count_lev_2
@@ -45,26 +45,26 @@ class GameStage():
                 pygame.time.wait(1000)
                 if self.level_nb == 0:
                     game.level = "level_1"
-                    brick_wall = gbe.BrickWall()
+                    brick_wall = gbe.BrickWall(img_path)
                     brick_wall.brickwall_lev(brick_group, game.level)
 
                 if self.level_nb == 1:
                     game.level = "level_2"
-                    brick_wall = gbe.BrickWall()
+                    brick_wall = gbe.BrickWall(img_path)
                     brick_wall.brickwall_lev(brick_group, game.level)
                     extra_balls_group.empty()
                     fast_ball_group.empty()
                     ball.speed = 2
-                    ball.image = pygame.image.load("PNG/ball.png").convert_alpha()
+                    ball.image = pygame.image.load(img_path/"ball.png").convert_alpha()
 
                 if self.level_nb == 2:
                     game.level = "level_3"
-                    brick_wall = gbe.BrickWall()
+                    brick_wall = gbe.BrickWall(img_path)
                     brick_wall.brickwall_lev(brick_group, game.level)
                     extra_balls_group.empty()
                     fast_ball_group.empty()
                     ball.speed = 2
-                    ball.image = pygame.image.load("PNG/ball.png").convert_alpha()
+                    ball.image = pygame.image.load(img_path/"ball.png").convert_alpha()
 
                 if self.level_nb == 3:
                     game.level = "new_game"
@@ -105,14 +105,14 @@ class GameStage():
 
         rand_extra = random.randrange(500)
         if rand_extra == 1:
-            ball_container = gbe.BallContainer()
+            ball_container = gbe.BallContainer(img_path)
             ball_container_group.add(ball_container)
     
         if game.level == "level_1": level_range = 1000
         else: level_range = 400
         rand_fast = random.randrange(level_range)
         if rand_fast == 1:
-            fast_ball = gbe.FastBall()
+            fast_ball = gbe.FastBall(img_path)
             fast_ball_group.add(fast_ball)
 
         bar_group.draw(win)
@@ -211,28 +211,28 @@ win_width = 630
 win_height = 500
 win = pygame.display.set_mode((win_width, win_height))
 pygame.display.set_caption('Brick Breaker')
-icon = pygame.image.load('PNG/icon.png')
+icon = pygame.image.load(img_path/"icon.png")
 pygame.display.set_icon(icon)
 
-game_font = pygame.font.Font('PNG/squaredance10.ttf',24)
+game_font = pygame.font.Font(img_path/"squaredance10.ttf",24)
 
-start_bg = pygame.image.load("PNG/start.png").convert_alpha()
-background = pygame.image.load("PNG/tlo.png").convert_alpha()
-game_over_bg = pygame.image.load("PNG/game_over.png").convert_alpha()
+start_bg = pygame.image.load(img_path/"start.png").convert_alpha()
+background = pygame.image.load(img_path/"tlo.png").convert_alpha()
+game_over_bg = pygame.image.load(img_path/"game_over.png").convert_alpha()
 
-start_btn = gbe.Button("PNG/start_button.png",(310,300))
+start_btn = gbe.Button(img_path/"start_button.png",(310,300))
 start_btn_group = pygame.sprite.GroupSingle()
 start_btn_group.add(start_btn)
 
-newgame_btn = gbe.Button("PNG/new_game_button.png", (300, 350))
+newgame_btn = gbe.Button(img_path/"new_game_button.png", (300, 350))
 newgame_btn_group = pygame.sprite.GroupSingle()
 newgame_btn_group.add(newgame_btn)
 
-exit_btn = gbe.Button("PNG/exit_button.png", (300, 420))
+exit_btn = gbe.Button(img_path/"exit_button.png", (300, 420))
 exit_btn_group = pygame.sprite.GroupSingle()
 exit_btn_group.add(exit_btn)
 
-ball = gbe.Ball("PNG/ball.png")
+ball = gbe.Ball(img_path)
 ball_group = pygame.sprite.GroupSingle()
 ball_group.add(ball)
 
@@ -242,7 +242,7 @@ fast_ball_group = pygame.sprite.Group()
 
 brick_group = pygame.sprite.Group()
 
-bar = gbe.Bar()
+bar = gbe.Bar(img_path)
 bar_group = pygame.sprite.GroupSingle()
 bar_group.add(bar)
 
