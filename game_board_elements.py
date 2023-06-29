@@ -15,23 +15,15 @@ class Bar(pygame.sprite.Sprite):
         super().__init__()
         self.x = 300
         self.y = 450
-       
-        bar_3_balls = pygame.image.load(img_path/"bar3.png").convert_alpha()
-        bar_2_balls = pygame.image.load(img_path/"bar2.png").convert_alpha()
-        bar_1_ball = pygame.image.load(img_path/"bar1.png").convert_alpha()
-        bar_0_ball = pygame.image.load(img_path/"bar0.png").convert_alpha()
-
-        self.balls_nb = [bar_3_balls, bar_2_balls, bar_1_ball, bar_0_ball]
-        self.image = pygame.image.load(img_path/"bar3.png").convert_alpha()
+        self.img_path = img_path
+        self.image = pygame.image.load(self.img_path/"bar3.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (self.x,self.y))
-
+        self.balls_nb = {3 : "bar3.png",
+                         2 : "bar2.png",
+                         1 : "bar1.png",
+                         0 : "bar0.png"}
     def bar_image(self, counter):
-        if counter == 3: self.image = self.balls_nb[0]
-        if counter == 2: self.image = self.balls_nb[1]
-        if counter == 1: self.image = self.balls_nb[2]
-        if counter == 0:
-            self.image = self.balls_nb[3]
-            self.rect = self.image.get_rect(midbottom = (self.x,self.y))
+        self.image = pygame.image.load(self.img_path/self.balls_nb[counter]).convert_alpha()
 
     def movement(self):
         if pygame.key.get_pressed()[pygame.K_RIGHT] and self.rect.right < 620:
@@ -53,6 +45,7 @@ class Brick(pygame.sprite.Sprite):
         self.points = points
         self.hard = hard
         self.img_path = img_path
+
     def cracked(self, img_path):
        self.hardness = 0
        self.image = pygame.image.load(img_path/"brick_cracked3.png").convert_alpha()
@@ -85,14 +78,12 @@ class BrickWall():
         first_brick_x = [10, 35, 10, 35, 10]
 
         points = lev_set[level]["max_points"]
-
         for i in range(len((lev_set[level]["hard"]))):
-            hardness = lev_set[level]['hard'][i]
-            br_color = brick_colors[i] if hardness == 0 else hard_brick_color
+            hard = lev_set[level]["hard"][i]
+            br_color = brick_colors[i] if hard == 0 else hard_brick_color
             br_number = nb_of_bricks[i]
             first_br_x = first_brick_x[i]
-           
-            self.brick_line(brickgroup, br_color, br_number, first_br_x, brick_height, points, hardness)              
+            self.brick_line(brickgroup, br_color, br_number, first_br_x, brick_height, points, hard)              
             brick_height += 26
             points -= 10
 
@@ -127,7 +118,7 @@ class FastBall(pygame.sprite.Sprite):
 class Ball(pygame.sprite.Sprite):
     def __init__(self, img_path):
         super().__init__()
-        self.img_path = img_path#/"ball.png"
+        self.img_path = img_path
         self.x = 300
         self.y = 350
         self.image = pygame.image.load(self.img_path/"ball.png").convert_alpha()
