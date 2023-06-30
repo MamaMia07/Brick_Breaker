@@ -8,117 +8,95 @@ img_path = pathlib.Path.cwd()/"PNG"
 
 class GameStage():
     def __init__(self):
-        self.last_level = 3
-        self.level_nb = 0
+        self.last_level = 4
+        self.level_nb = 1
 
-    def event_response(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+    def score_display(self, pos):
+        text_score = "SCORE: " + str(game.score)
+        text_surface = game_font.render(text_score, False,(0, 255,0))
+        win.blit(text_surface, pos)
+
+    def event_response(self, event):
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE: 
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE: 
-                    pygame.quit()
-                    sys.exit()
+            if event.key in [ pygame.K_RETURN, pygame.K_KP_ENTER]:
+                game.level = "counting"
+                game.counter = 3
+                game.score = 0
+
+    def setting_level(self):
+        if self.level_nb == 4: game.level = "new_game"
+        else:
+            levels = ["level_1", "level_2", "level_3"]
+            game.level = levels[self.level_nb -1]
+            brick_wall = gbe.BrickWall(img_path)
+            brick_wall.brickwall_lev(brick_group, game.level)
+            extra_balls_group.empty()
+            fast_ball_group.empty()
+            ball.speed = 2
+            ball.image = pygame.image.load(img_path/"ball.png").convert_alpha()
+
 
     def counting(self):
         pygame.mouse.set_visible(False) 
 
         ball = gbe.Ball(img_path)
         ball_group.add(ball)
-
         extra_balls_group.empty()
         fast_ball_group.empty()
         ball_container_group.empty()
         brick_group.empty()
-        
         bar.rect.x , bar.rect.y = 260, 430
 
-        count_lev_1 = [img_path/"count_lev1_3.png", img_path/"count_lev1_2.png",img_path/"count_lev1_1.png"] 
-        count_lev_2 = [img_path/"count_lev2_3.png", img_path/"count_lev2_2.png",img_path/"count_lev2_1.png"]
-        count_lev_3 = [img_path/"count_lev3_3.png", img_path/"count_lev3_2.png",img_path/"count_lev3_1.png"]
-
-        if self.level_nb == 0: self.count_lev = count_lev_1
-        if self.level_nb == 1: self.count_lev = count_lev_2
-        if self.level_nb == 2: self.count_lev = count_lev_3  
+        count_lev = {1:["count_lev1_3.png", "count_lev1_2.png","count_lev1_1.png"],
+                     2:["count_lev2_3.png", "count_lev2_2.png","count_lev2_1.png"],
+                     3:["count_lev3_3.png","count_lev3_2.png", "count_lev3_1.png"]}
         for i in range(3):
-            self.image = pygame.image.load(self.count_lev[i]).convert_alpha()
-            self.image.get_rect()
+            self.image = pygame.image.load(img_path/count_lev[self.level_nb][i]).convert_alpha()
             win.blit(self.image, (0, 0))
             text_score = "SCORE: " + str(game.score)
             text_surface = game_font.render(text_score,False,(0, 255,0))
             pygame.time.wait(1000)
             win.blit(text_surface, (30,465)) 
-
             pygame.display.flip()      
-            if i == 2:
-                pygame.time.wait(1000)
-                if self.level_nb == 0:
-                    game.level = "level_1"
-                    brick_wall = gbe.BrickWall(img_path)
-                    brick_wall.brickwall_lev(brick_group, game.level)
+        pygame.time.wait(1000)
+        self.setting_level()
 
-                if self.level_nb == 1:
-                    game.level = "level_2"
-                    brick_wall = gbe.BrickWall(img_path)
-                    brick_wall.brickwall_lev(brick_group, game.level)
-                    extra_balls_group.empty()
-                    fast_ball_group.empty()
-                    ball.speed = 2
-                    ball.image = pygame.image.load(img_path/"ball.png").convert_alpha()
-
-                if self.level_nb == 2:
-                    game.level = "level_3"
-                    brick_wall = gbe.BrickWall(img_path)
-                    brick_wall.brickwall_lev(brick_group, game.level)
-                    extra_balls_group.empty()
-                    fast_ball_group.empty()
-                    ball.speed = 2
-                    ball.image = pygame.image.load(img_path/"ball.png").convert_alpha()
-
-                if self.level_nb == 3:
-                    game.level = "new_game"
 
     def start(self):
         pygame.mouse.set_visible(True) 
-        #event_response()
-
-
-
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        #for event in pygame.event.get():
+            self.event_response(event)
             if event.type in [pygame.MOUSEBUTTONDOWN , pygame.KEYDOWN]:
                 game.level = "counting"
-
         win.blit(start_bg,(0,0))
         start_btn_group.draw(win)
         pygame.display.flip()
 
+
     def level(self):
         pygame.mouse.set_visible(False) 
-        #event_response()
-
-
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+            self.event_response(event)
             if len(brick_group)== 0:
                 pygame.time.wait(1000)
                 if game.level == "level_3":
-                    self.level_nb = 0
+                    #self.level_nb = 1
                     game.level = "new_game"
                 else:
                     self.level_nb += 1
                     game.counter = 3
                     game.level = "counting"
+
         if game.counter == 0:
             pygame.time.wait(1000)
             game.level = "new_game"
-            self.level_nb = 0
+            #self.level_nb = 1
 
         win.blit(background,(0,0))
 
@@ -168,49 +146,29 @@ class GameStage():
         brick_group.draw(win)
         brick_group.update() 
 
-        text_score = "SCORE: " + str(game.score)
-        text_surface = game_font.render(text_score, False,(0, 255,0))
-        win.blit(text_surface, (30,465))
-
+        self.score_display((30,465))
         pygame.display.flip()
+
 
     def new_game(self):
         pygame.mouse.set_visible(True) 
-        #event_response()
-
+        self.level_nb = 1
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE: 
+            self.event_response(event)
+            if newgame_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                game.level = "counting"
+                game.counter = 3
+                game.score = 0
+                #self.level_nb = 1 
+            if exit_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.quit()
                     sys.exit()
-            #for event in pygame.event.get():
-                if event.key in [ pygame.K_RETURN, pygame.K_KP_ENTER]:
-                    game.level = "counting"
-                    game.counter = 3
-                    game.score = 0
-                    self.level_nb = 0 
-                if newgame_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                    game.level = "counting"
-                    game.counter = 3
-                    game.score = 0
-                    self.level_nb = 0 
-                if exit_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.quit()
-                    sys.exit()
-
         win.blit(game_over_bg,(0,0))
-
-        text_score = "SCORE: " + str(game.score)
-        text_surface = game_font.render(text_score,False,(0, 255,0))
-        win.blit(text_surface, (250,150))
-        
+        self.score_display((250,150))
         newgame_btn_group.draw(win)
         exit_btn_group.draw(win)
-
         pygame.display.flip()
+
 
     def set_game_level(self):
         if game.level == "start":
