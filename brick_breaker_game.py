@@ -93,10 +93,8 @@ class GameStage():
         for i in range(3):
             self.image = pygame.image.load(img_path/count_lev[self.level_nb][i]).convert_alpha()
             win.blit(self.image, (0, 0))
-            text_score = "SCORE: " + str(game.score)
-            text_surface = game_font.render(text_score,False,(0, 255,0))
+            self.score_display((30,465))
             pygame.time.wait(1000)
-            win.blit(text_surface, (30,465)) 
             pygame.display.flip()      
         pygame.time.wait(1000)
         self.setting_level()
