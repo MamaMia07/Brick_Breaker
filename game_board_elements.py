@@ -55,36 +55,37 @@ class Brick(pygame.sprite.Sprite):
 class BrickWall():
     def __init__(self,img_path):
         self.img_path = img_path
-    def brick_line(self,brickgroup, brick_file, brick_nb, col, row, points, hard):
+        self.br_width = 51
+        self.br_pos_y = 8
+
+    def brick_line(self,brickgroup, brick_file, brick_nb, pos_x, pos_y, points, hard):
         i = 0
-        brick_width = 51
         for brick in range(brick_nb):
-            new_brick = Brick(brick_file, col+i, row, points, hard)
+            new_brick = Brick(brick_file, pos_x+i, pos_y, points, hard)
             new_brick.hardness = hard 
-            i= i+ brick_width
+            i= i+ self.br_width
             brickgroup.add(new_brick)
 
     def brickwall_lev(self, brickgroup, level):
-        brick_height = 8
         brick_colors = [self.img_path/"brick_red.png",self.img_path/"brick_green.png",self.img_path/"brick_blue.png",
                         self.img_path/"brick_yellow.png", self.img_path/"brick_purple.png"]
         hard_brick_color = self.img_path/"brick.png"
-       
-        lev_set = {"level_1" : {"hard" : [0, 0, 0], "max_points": 30},
-                   "level_2" : {"hard" : [0, 0, 0, 0 ,0], "max_points": 50},
-                   "level_3" : {"hard" : [0, 1, 0, 0 ,1], "max_points": 50}}
-        
+        # brick lines settings for all levels
         nb_of_bricks = [ 12, 11 , 12, 11, 12]
-        first_brick_x = [10, 35, 10, 35, 10]
+        br_pos_x = [10, 35, 10, 35, 10]
+        # levels' brick lines settings
+        lev_sets = {"level_1" : {"hard" : [0, 0, 0], "max_points": 30},
+                   "level_2" : {"hard" : [0, 0, 0, 0 ,0], "max_points": 50},
+                   "level_3" : {"hard" : [0, 1, 0, 0 ,1], "max_points": 60}}
 
-        points = lev_set[level]["max_points"]
-        for i in range(len((lev_set[level]["hard"]))):
-            hard = lev_set[level]["hard"][i]
+        points = lev_sets[level]["max_points"]
+        for i in range(len((lev_sets[level]["hard"]))):
+            hard = lev_sets[level]["hard"][i]
             br_color = brick_colors[i] if hard == 0 else hard_brick_color
             br_number = nb_of_bricks[i]
-            first_br_x = first_brick_x[i]
-            self.brick_line(brickgroup, br_color, br_number, first_br_x, brick_height, points, hard)              
-            brick_height += 26
+            first_br_x = br_pos_x[i]
+            self.brick_line(brickgroup, br_color, br_number, first_br_x, self.br_pos_y, points, hard)              
+            self.br_pos_y += 26
             points -= 10
 
 

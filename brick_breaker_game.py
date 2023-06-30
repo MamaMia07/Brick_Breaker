@@ -11,6 +11,16 @@ class GameStage():
         self.last_level = 3
         self.level_nb = 0
 
+    def event_response(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE: 
+                    pygame.quit()
+                    sys.exit()
+
     def counting(self):
         pygame.mouse.set_visible(False) 
 
@@ -71,18 +81,27 @@ class GameStage():
 
     def start(self):
         pygame.mouse.set_visible(True) 
+        #event_response()
+
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+        #for event in pygame.event.get():
             if event.type in [pygame.MOUSEBUTTONDOWN , pygame.KEYDOWN]:
                 game.level = "counting"
+
         win.blit(start_bg,(0,0))
         start_btn_group.draw(win)
         pygame.display.flip()
 
     def level(self):
         pygame.mouse.set_visible(False) 
+        #event_response()
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -157,6 +176,8 @@ class GameStage():
 
     def new_game(self):
         pygame.mouse.set_visible(True) 
+        #event_response()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -165,19 +186,20 @@ class GameStage():
                 if event.key == pygame.K_ESCAPE: 
                     pygame.quit()
                     sys.exit()
+            #for event in pygame.event.get():
                 if event.key in [ pygame.K_RETURN, pygame.K_KP_ENTER]:
                     game.level = "counting"
                     game.counter = 3
                     game.score = 0
                     self.level_nb = 0 
-            if newgame_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                game.level = "counting"
-                game.counter = 3
-                game.score = 0
-                self.level_nb = 0 
-            if exit_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.quit()
-                sys.exit()
+                if newgame_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                    game.level = "counting"
+                    game.counter = 3
+                    game.score = 0
+                    self.level_nb = 0 
+                if exit_btn.rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.quit()
+                    sys.exit()
 
         win.blit(game_over_bg,(0,0))
 
